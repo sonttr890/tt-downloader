@@ -2,22 +2,9 @@
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tiktokUrl = $_POST['tiktok_url'];
 
-    // Gunakan API pihak ketiga untuk mengunduh video/foto TikTok
-    $apiUrl = "https://api.tiklydown.eu.org/api/download"; // Contoh API
-    $data = [
-        'url' => $tiktokUrl
-    ];
-
-    $options = [
-        'http' => [
-            'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-            'method'  => 'POST',
-            'content' => http_build_query($data),
-        ],
-    ];
-
-    $context  = stream_context_create($options);
-    $response = file_get_contents($apiUrl, false, $context);
+    // Gunakan API dengan metode GET
+    $apiUrl = "https://api.tiklydown.eu.org/api/download?url=" . urlencode($tiktokUrl);
+    $response = file_get_contents($apiUrl);
 
     if ($response === FALSE) {
         die("Gagal mengambil data dari TikTok.");
@@ -26,20 +13,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = json_decode($response, true);
 
     if (isset($result['video'])) {
-        // Jika hasilnya adalah video
-        $videoUrl = $result['video'];
-        header("Location: $videoUrl"); // Redirect ke URL video untuk diunduh
+        header("Location: " . $result['video']);
         exit();
     } elseif (isset($result['image'])) {
-        // Jika hasilnya adalah foto
-        $imageUrl = $result['image'];
-        header("Location: $imageUrl"); // Redirect ke URL foto untuk diunduh
+        header("Location: " . $result['image']);
         exit();
     } else {
-        echo "Tidak dapat menemukan video atau foto.";
+        echo "Tidak dapat menemukan video/foto.";
     }
 } else {
-    header("Location: index.php");
+    header("HTTP/1.1 405 Method Not Allowed");
+    echo "Hanya metode POST yang diizinkan!";
     exit();
 }
 ?>
