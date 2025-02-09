@@ -9,12 +9,17 @@
 <body>
     <div class="container">
         <h1>TikTok Downloader HD</h1>
-        <p>Unduh video dan foto TikTok dalam kualitas HD dengan mudah!</p>
+        <p>Unduh video dan foto TikTok dalam kualitas HD!</p>
         
-        <form action="download.php" method="POST">
-            <input type="url" name="tiktok_url" placeholder="Masukkan URL TikTok" required>
+        <!-- Ubah method POST ke GET -->
+        <form action="download.php" method="GET">
+            <input type="url" name="url" placeholder="Masukkan URL TikTok" required>
             <button type="submit">Unduh Sekarang</button>
         </form>
+
+        <?php if (isset($_GET['error'])): ?>
+            <p class="error"><?php echo htmlspecialchars($_GET['error']); ?></p>
+        <?php endif; ?>
     </div>
 </body>
 </html>
